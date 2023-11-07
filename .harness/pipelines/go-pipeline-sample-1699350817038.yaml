@@ -38,44 +38,6 @@ pipeline:
                           spec:
                             branch: main
                       description: clone the code
-              - parallel:
-                  - step:
-                      type: Run
-                      name: Run_3
-                      identifier: Run_3
-                      spec:
-                        shell: Sh
-                        command: echo "first build"
-                  - step:
-                      type: BuildAndPushDockerRegistry
-                      name: BuildAndPushDockerRegistry_1
-                      identifier: BuildAndPushDockerRegistry_1
-                      spec:
-                        connectorRef: account.harnessImage
-                        repo: vaidyavishal269/sample-pipeline1
-                        tags:
-                          - First
-              - step:
-                  identifier: gotest
-                  name: go_test
-                  spec:
-                    shell: Sh
-                    command: echo "go test executed"
-                  timeout: ""
-                  type: Run
-              - step:
-                  identifier: dockerbuild
-                  name: docker_build
-                  spec:
-                    connectorRef: account.harnessImage
-                    image: plugins/docker
-                    settings:
-                      dry_run: "true"
-                      repo: hello/world
-                      tags: latest
-                  timeout: ""
-                  type: Plugin
-                  description: Docker build
           platform:
             os: Linux
             arch: Amd64
