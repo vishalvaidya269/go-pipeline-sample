@@ -17,24 +17,57 @@ pipeline:
           cloneCodebase: true
           execution:
             steps:
-              - step:
-                  identifier: gobuild
-                  name: go_build
-                  spec:
-                    command: go build
-                  timeout: ""
-                  type: Run
+              - parallel:
+                  - step:
+                      identifier: gobuild
+                      name: go_build
+                      spec:
+                        shell: Sh
+                        command: echo "First Build"
+                      timeout: ""
+                      type: Run
+                  - step:
+                      type: GitClone
+                      name: GitClone_1
+                      identifier: GitClone_1
+                      spec:
+                        connectorRef: account.Github_OAuth_1699350805010
+                        repoName: git@github.com:vishalvaidya269/go-pipeline-sample.git
+                        build:
+                          type: branch
+                          spec:
+                            branch: main
+                      description: clone the code
+              - parallel:
+                  - step:
+                      type: Run
+                      name: Run_3
+                      identifier: Run_3
+                      spec:
+                        shell: Sh
+                        command: echo "first build"
+                  - step:
+                      type: BuildAndPushDockerRegistry
+                      name: BuildAndPushDockerRegistry_1
+                      identifier: BuildAndPushDockerRegistry_1
+                      spec:
+                        connectorRef: account.harnessImage
+                        repo: vaidyavishal269/sample-pipeline1
+                        tags:
+                          - First
               - step:
                   identifier: gotest
                   name: go_test
                   spec:
-                    command: go test -v ./...
+                    shell: Sh
+                    command: echo "go test executed"
                   timeout: ""
                   type: Run
               - step:
                   identifier: dockerbuild
                   name: docker_build
                   spec:
+                    connectorRef: account.harnessImage
                     image: plugins/docker
                     settings:
                       dry_run: "true"
@@ -42,10 +75,11 @@ pipeline:
                       tags: latest
                   timeout: ""
                   type: Plugin
+                  description: Docker build
           platform:
-            arch: Amd64
             os: Linux
+            arch: Amd64
           runtime:
-            spec: {}
             type: Cloud
+            spec: {}
         type: CI
