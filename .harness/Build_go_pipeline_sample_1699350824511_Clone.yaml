@@ -1,0 +1,49 @@
+---
+pipeline:
+  orgIdentifier: "default"
+  projectIdentifier: "Project1"
+  properties:
+    ci:
+      codebase:
+        build: "<+input>"
+        connectorRef: "account.Github_OAuth_1699350805010"
+        repoName: "go-pipeline-sample"
+  stages:
+  - stage:
+      identifier: "build"
+      name: "build"
+      spec:
+        cloneCodebase: true
+        execution:
+          steps:
+          - parallel:
+            - step:
+                identifier: "gobuild"
+                name: "go_build"
+                spec:
+                  shell: "Sh"
+                  command: "echo \"First Build\""
+                timeout: ""
+                type: "Run"
+            - step:
+                type: "GitClone"
+                name: "GitClone_1"
+                identifier: "GitClone_1"
+                spec:
+                  connectorRef: "account.Github_OAuth_1699350805010"
+                  repoName: "git@github.com:vishalvaidya269/go-pipeline-sample.git"
+                  build:
+                    type: "branch"
+                    spec:
+                      branch: "main"
+                description: "clone the code"
+        platform:
+          os: "Linux"
+          arch: "Amd64"
+        runtime:
+          type: "Cloud"
+          spec: {}
+      type: "CI"
+  identifier: "Build_go_pipeline_sample_1699350824511_Clone"
+  tags: {}
+  name: "Build go-pipeline-sample - Clone"
